@@ -1,0 +1,96 @@
+{
+ "aoi": "kaveri_delta",
+ "bbox": [
+  79.0,
+  10.5,
+  79.9,
+  11.2
+ ],
+ "dates": [
+  "2026-06-15",
+  "2026-06-27",
+  "2026-07-09",
+  "2026-07-21",
+  "2026-08-02",
+  "2026-08-14",
+  "2026-08-26",
+  "2026-09-07"
+ ],
+ "pols": [
+  "hh",
+  "hv"
+ ],
+ "series_shape": [
+  140,
+  180
+ ],
+ "note": "SYNTHETIC DEMO DATA",
+ "stages": {
+  "1": {
+   "name": "flooded",
+   "color": "#2171b5"
+  },
+  "2": {
+   "name": "growth",
+   "color": "#a1d99b"
+  },
+  "3": {
+   "name": "peak",
+   "color": "#006d2c"
+  },
+  "4": {
+   "name": "harvested",
+   "color": "#d6b978"
+  }
+ },
+ "stats": {
+  "2026-06-15": {
+   "flooded": 9.8,
+   "growth": 38.9,
+   "peak": 39.2,
+   "harvested": 12.1
+  },
+  "2026-06-27": {
+   "flooded": 13.3,
+   "growth": 34.2,
+   "peak": 43.1,
+   "harvested": 9.5
+  },
+  "2026-07-09": {
+   "flooded": 10.4,
+   "growth": 40.5,
+   "peak": 39.7,
+   "harvested": 9.4
+  },
+  "2026-07-21": {
+   "flooded": 10.6,
+   "growth": 43.0,
+   "peak": 33.3,
+   "harvested": 13.1
+  },
+  "2026-08-02": {
+   "flooded": 14.7,
+   "growth": 42.6,
+   "peak": 28.7,
+   "harvested": 14.0
+  },
+  "2026-08-14": {
+   "flooded": 14.5,
+   "growth": 43.0,
+   "peak": 35.4,
+   "harvested": 7.1
+  },
+  "2026-08-26": {
+   "flooded": 7.7,
+   "growth": 47.6,
+   "peak": 37.2,
+   "harvested": 7.5
+  },
+  "2026-09-07": {
+   "flooded": 8.7,
+   "growth": 44.6,
+   "peak": 37.8,
+   "harvested": 9.0
+  }
+ }
+}

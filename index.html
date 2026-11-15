@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NISAR Paddy Change Tracker</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+ body{margin:0;font-family:system-ui,sans-serif;display:flex;height:100vh}
+ #side{width:340px;padding:12px;overflow:auto;background:#111827;color:#e5e7eb;box-sizing:border-box}
+ #map{flex:1}
+ h1{font-size:18px;margin:0 0 4px} .note{background:#7c2d12;padding:6px 8px;border-radius:6px;font-size:12px;margin:8px 0}
+ .leg span{display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:middle;border-radius:3px}
+ .bar{display:flex;height:16px;border-radius:4px;overflow:hidden;margin:6px 0} .bar div{height:100%}
+ input[type=range]{width:100%} button{padding:4px 10px;border-radius:6px;border:0;cursor:pointer}
+ canvas{background:#1f2937;border-radius:6px;width:100%} #narr{font-size:13px;line-height:1.4}
+ @media(max-width:700px){body{flex-direction:column-reverse}#side{width:100%;height:45vh}}
+</style></head><body>
+<div id="side">
+ <h1>Rice-field change from radar</h1>
+ <div id="note" class="note" style="display:none"></div>
+ <div>Date: <b id="dlabel"></b> <button id="play">▶ Play</button></div>
+ <input id="slider" type="range" min="0" value="0">
+ <div>Overlay opacity <input id="op" type="range" min="0" max="1" step="0.05" value="0.85"></div>
+ <div class="bar" id="bar"></div><div class="leg" id="legend"></div>
+ <h3 style="margin:12px 0 4px;font-size:14px">Backscatter at clicked point (dB)</h3>
+ <canvas id="chart" width="320" height="170"></canvas>
+ <div id="hint" style="font-size:12px;opacity:.7">Click the map to plot a pixel's time series.</div>
+ <h3 style="margin:12px 0 4px;font-size:14px">What the radar is telling us</h3>
+ <div id="narr">
+  <b>Flooded fields</b> look dark: smooth water reflects the radar beam away from the satellite.<br>
+  <b>Growing rice</b> raises cross-pol (HV): leaves and stems scatter the signal in many directions.<br>
+  <b>Peak biomass</b> is the brightest in HV; <b>harvest</b> drops it again. (Edit this text from Task B's narrative.)
+ </div>
+</div>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(async()=>{
+ const meta=await (await fetch('public_data/meta.json')).json();
+ const series=await (await fetch('public_data/series.json')).json();
+ const [W,S,E,N]=meta.bbox, [sh,sw]=meta.series_shape, bounds=[[S,W],[N,E]];
+ const map=L.map('map').fitBounds(bounds);
+ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
+ let overlay=null,idx=0,marker=null,sel=null,timer=null;
+ const slider=document.getElementById('slider'); slider.max=meta.dates.length-1;
+ if(meta.note){const n=document.getElementById('note');n.style.display='block';n.textContent=meta.note;}
+ document.getElementById('legend').innerHTML=Object.values(meta.stages).map(s=>`<div><span style="background:${s.color}"></span>${s.name}</div>`).join('');
+ function show(i){
+  idx=i; slider.value=i; const d=meta.dates[i];
+  document.getElementById('dlabel').textContent=d;
+  if(overlay) map.removeLayer(overlay);
+  overlay=L.imageOverlay(`public_data/stage_${d}.png`,bounds,{opacity:+document.getElementById('op').value}).addTo(map);
+  const st=meta.stats[d];
+  document.getElementById('bar').innerHTML=Object.entries(meta.stages).map(([c,s])=>`<div title="${s.name} ${st[s.name]}%" style="width:${st[s.name]}%;background:${s.color}"></div>`).join('');
+  draw();
+ }
+ slider.oninput=e=>show(+e.target.value);
+ document.getElementById('op').oninput=e=>overlay&&overlay.setOpacity(+e.target.value);
+ document.getElementById('play').onclick=e=>{
+  if(timer){clearInterval(timer);timer=null;e.target.textContent='▶ Play';return;}
+  e.target.textContent='⏸ Pause'; timer=setInterval(()=>show((idx+1)%meta.dates.length),900);
+ };
+ map.on('click',e=>{
+  const r=Math.floor((N-e.latlng.lat)/(N-S)*sh), c=Math.floor((e.latlng.lng-W)/(E-W)*sw);
+  if(r<0||c<0||r>=sh||c>=sw) return;
+  sel=r*sw+c; if(marker) map.removeLayer(marker); marker=L.circleMarker(e.latlng,{radius:6,color:'#fff'}).addTo(map);
+  document.getElementById('hint').style.display='none'; draw();
+ });
+ function draw(){
+  const cv=document.getElementById('chart'),g=cv.getContext('2d'),w=cv.width,h=cv.height;
+  g.clearRect(0,0,w,h); if(sel===null) return;
+  const cols=['#60a5fa','#34d399','#f472b6','#fbbf24'];
+  const all=meta.pols.flatMap(p=>series[p][sel]).filter(v=>v!==null);
+  if(!all.length) return;
+  const lo=Math.min(...all)-1,hi=Math.max(...all)+1,n=meta.dates.length,px=i=>30+i*(w-40)/Math.max(n-1,1),py=v=>10+(hi-v)/(hi-lo)*(h-40);
+  g.fillStyle='#9ca3af';g.font='10px sans-serif';g.fillText(hi.toFixed(0),2,16);g.fillText(lo.toFixed(0),2,h-30);
+  g.strokeStyle='#6b7280';g.beginPath();g.moveTo(px(idx),8);g.lineTo(px(idx),h-30);g.stroke();
+  meta.pols.forEach((p,k)=>{
+   g.strokeStyle=cols[k];g.lineWidth=2;g.beginPath();let started=false;
+   series[p][sel].forEach((v,i)=>{if(v===null)return;started?g.lineTo(px(i),py(v)):g.moveTo(px(i),py(v));started=true;});g.stroke();
+   g.fillStyle=cols[k];g.fillText(p.toUpperCase(),w-40-k*34,h-6);
+  });
+  g.fillStyle='#9ca3af';g.fillText(meta.dates[0].slice(5),24,h-16);g.fillText(meta.dates[n-1].slice(5),w-40,h-16);
+ }
+ show(0);
+})();
+</script></body></html>

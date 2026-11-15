@@ -1,0 +1,4 @@
+# Task C only. Match CUDA version to your GPU/driver.
+torch
+cupy-cuda12x
+# RAPIDS (cudf, cuml, cucim): install via the RAPIDS selector at rapids.ai

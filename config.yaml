@@ -1,0 +1,27 @@
+# SHARED CONFIG - everyone reads from here. Changes need a PR everyone sees.
+aoi:
+  name: kaveri_delta
+  bbox: [79.0, 10.5, 79.9, 11.2]   # lon_min, lat_min, lon_max, lat_max (adjust after Phase 0)
+crs: "EPSG:4326"                   # plain lat/lon grid (simplest for the web map)
+resolution_deg: 0.001            # ~110 m. Smaller = bigger files. Override with --res
+nodata: -9999
+polarizations: [hh, hv]            # add vv, vh if using Sentinel-1
+date_format: "%Y-%m-%d"
+stage_classes:
+  0: nodata
+  1: flooded
+  2: growth
+  3: peak
+  4: harvested
+paths:
+  raw: data/raw
+  cube: data/processed
+  outputs: outputs
+  app_data: app/public_data
+
+# Baseline stage thresholds (dB). PLACEHOLDERS - tune from the percentile printout of baseline.py
+# copol = first pol in `polarizations` (hh/vv), cross = second (hv/vh)
+baseline:
+  water_copol_db: -17     # copol below this => flooded / open water
+  growth_cross_db: -23    # cross above this => crop growing
+  peak_cross_db: -17      # cross above this => peak biomass

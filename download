@@ -1,0 +1,14 @@
+data/
+outputs/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.zarr/
+*.h5
+*.tif
+!contracts/sample/*.tif
+!app/public_data/*.tif
+.DS_Store
+app/public_data/*.png
+app/public_data/series.json

@@ -1,0 +1,66 @@
+[
+ {
+  "date": "2026-06-15",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ },
+ {
+  "date": "2026-06-27",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ },
+ {
+  "date": "2026-07-09",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ },
+ {
+  "date": "2026-07-21",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ },
+ {
+  "date": "2026-08-02",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ },
+ {
+  "date": "2026-08-14",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ },
+ {
+  "date": "2026-08-26",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ },
+ {
+  "date": "2026-09-07",
+  "sensor": "DEMO",
+  "pols": [
+   "hh",
+   "hv"
+  ]
+ }
+]

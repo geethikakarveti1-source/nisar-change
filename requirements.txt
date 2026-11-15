@@ -1,0 +1,13 @@
+numpy
+pyyaml
+rasterio
+h5py
+xarray
+zarr
+scipy
+scikit-image
+scikit-learn
+matplotlib
+pandas
+geopandas
+# pin exact versions (pip freeze) once everyones env works
